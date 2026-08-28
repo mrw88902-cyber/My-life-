@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>وحشتيني ✨</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #2b0816 0%, #521226 50%, #1a050e 100%);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+            overflow-x: hidden;
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+            transition: background 0.8s ease-in-out;
+        }
+
+        /* الطبقة الشفافة التي تظهر بعد فتح القفل */
+        body.logged-in {
+            background-image: linear-gradient(rgba(20, 5, 12, 0.65), rgba(20, 5, 12, 0.65)), url('bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 440px;
+            background: rgba(40, 10, 25, 0.75);
+            backdrop-filter: blur(12px);
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            padding: 22px;
+            text-align: center;
+            position: relative;
+            border: 1px solid rgba(255, 182, 193, 0.3);
+            z-index: 10;
+        }
+
+        /* 1. شاشة القفل */
+        #lock-screen {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding: 40px 10px;
+        }
+
+        .lock-title {
+            font-size: 32px;
+            color: #ffb7c5;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 183, 197, 0.5);
+        }
+
+        input[type="text"] {
+            padding: 14px;
+            border: 2px solid #ff758c;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 17px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.9);
+            color: #4a0017;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        button.btn-main {
+            padding: 14px;
+            background: linear-gradient(45deg, #ff758c, #ff7eb3);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(255, 117, 140, 0.4);
+            transition: 0.3s;
+            width: 100%;
+        }
+
+        button.btn-main:active {
+            transform: scale(0.97);
+        }
+
+        /* 2. المحتوى الرئيسي */
+        #main-content {
+            display: none;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            color: #ffb7c5;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .header p {
+            font-size: 14px;
+            color: #ffd1dc;
+        }
+
+        /* المشغل الصوتي */
+        .audio-player {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 183, 197, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .audio-player p {
+            font-size: 14px;
+            font-weight: bold;
+            color: #ffc2d1;
+        }
+
+        .play-btn {
+            padding: 10px;
+            background: #ff4d6d;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* العداد الحي */
+        .counter-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 18px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 117, 140, 0.4);
+        }
+
+        .counter-box h3 {
+            font-size: 15px;
+            color: #ffb7c5;
+            margin-bottom: 14px;
+        }
+
+        .timer {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .timer-unit {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 12px;
+            border-radius: 12px;
+            min-width: 65px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .timer-unit span {
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .timer-unit small {
+            display: block;
+            font-size: 11px;
+            color: #ffc2d1;
+        }
+
+        /* شريط التواريخ Timeline */
+        .timeline-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 15px;
+            text-align: right;
+            border-right: 4px solid #ff758c;
+        }
+
+        .timeline-box h3 {
+            font-size: 16px;
+            color: #ffb7c5;
+            margin-bottom: 12px;
+        }
+
+        .timeline-item {
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed rgba(255, 183, 197, 0.3);
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .timeline-date {
+            font-size: 12px;
+            font-weight: bold;
+            color: #ffffff;
+            background: #ff4d6d;
+            padding: 2px 8px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 4px;
+        }
+
+        .timeline-text {
+            font-size: 13px;
+            color: #ffe6eb;
+            line-height: 1.5;
+        }
+
+        /* كروت الصور */
+        .photo-card {
+            background: rgba(0, 0, 0, 0.45);
+            padding: 14px;
+            border-radius: 20px;
+            text-align: right;
+            border: 1px solid rgba(255, 183, 197, 0.25);
+        }
+
+        .photo-card img {
+            width: 100%;
+            border-radius: 15px;
+            object-fit: cover;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .photo-card h4 {
+            color: #ffb7c5;
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .photo-card p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #ffe6eb;
+        }
+
+        /* الرسالة الختامية */
+        .final-letter {
+            background: rgba(255, 117, 140, 0.2);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1.5px dashed #ff758c;
+            line-height: 1.7;
+            text-align: right;
+            font-size: 14px;
+            color: #ffffff;
+        }
+
+        /* زرار الواتساب */
+        .whatsapp-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: linear-gradient(45deg, #25d366, #128c7e);
+            color: white;
+            text-decoration: none;
+            padding: 14px;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+            transition: 0.3s;
+        }
+
+        .whatsapp-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* تأثير القلوب المستمرة */
+        .heart {
+            position: fixed;
+            top: -20px;
+            font-size: 20px;
+            color: #ff4d6d;
+            animation: fall linear forwards;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(105vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- 1. شاشة القفل -->
+    <div id="lock-screen">
+        <div class="lock-title">وحشتيني ✨</div>
+        <p style="font-size: 13px; color: #ffd1dc;">اكتبي كلمة السر عشان تدخلي..</p>
+        <input type="text" id="passInput" placeholder="كلمة السر">
+        <button class="btn-main" onclick="checkPassword()">افتحي الهدية ❤️</button>
+    </div>
+
+    <!-- 2. المحتوى الرئيسي -->
+    <div id="main-content">
+        <div class="header">
+            <h1>❤️ my fav person</h1>
+            <p>عايز أقولك إنك أغلى حاجة ليااا</p>
+        </div>
+
+        <!-- المشغل الصوتي -->
+        <div class="audio-player">
+            <p>🎵 لسه بتسألي - هاني شاكر</p>
+            <button class="play-btn" onclick="toggleAudio()">تشغيل / إيقاف الأغنية ▶️</button>
+            <audio id="bgMusic" controls style="width: 100%;">
+                <source src="song.mp3" type="audio/mpeg">
+                متصفحك لا يدعم تشغيل هذا الملف.
+            </audio>
+        </div>
+
+        <!-- العداد الحي -->
+        <div class="counter-box">
+            <h3>من اللحظة دي وانا مبقتش بعرف انام ✨</h3>
+            <div class="timer">
+                <div class="timer-unit"><span id="days">0</span><small>يوم</small></div>
+                <div class="timer-unit"><span id="hours">0</span><small>ساعة</small></div>
+                <div class="timer-unit"><span id="minutes">0</span><small>دقيقة</small></div>
+                <div class="timer-unit"><span id="seconds">0</span><small>ثانية</small></div>
+            </div>
+        </div>
+
+        <!-- شريط التواريخ Timeline -->
+        <div class="timeline-box">
+            <h3>ذكرياتنا سوا 🗓️</h3>
+            <div class="timeline-item">
+                <span class="timeline-date">من 4 سنين</span>
+                <p class="timeline-text">كنت بحبك في السكوتي وفي سرّي، وبدعي ربنا تفضلي معايا.</p>
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-date">ليالي رمضان 🌙⚽</span>
+                <p class="timeline-text">لما كنت بلعب كورة تحت البيت كل يوم في رمضان.. وأنتِ واقفة في البلكونة بتتفرجي عليا، وعلى فكرة.. كنت باخد بالي ومتابع نظراتك 👀❤️</p>
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-date">15 أغسطس 2026 - 11:46 PM</span>
+                <p class="timeline-text">اليوم اللي اعترفتلك فيه بحبي وأول كلام حقيقي بيننا.. أحلى لحظة في حياتي ✨</p>
+            </div>
+        </div>
+
+        <!-- كروت الصور -->
+
+        <!-- 1. الكارت الأول (الصورة رقم 10) -->
+        <div class="photo-card">
+            <img src="10.jpg" alt="حكايتنا">
+            <h4>حكايتنا ❤️</h4>
+            <p>وسط كل الزحمة والدوشة اللي في العالم، عينيكي هي المكان الوحيد اللي بحس فيه بهدوء ورضا.. ربنا يديمك في حياتي يا أحلى نِعمة.</p>
+        </div>
+
+        <!-- 2. الكارت الثاني (الصورة رقم 1) -->
+        <div class="photo-card">
+            <img src="1.jpg" alt="سبايدرمان">
+            <h4>أحلى صورة في قلبي ❤️</h4>
+            <p>مهما بصيت حواليا، بتفضلي أنتِ الحاجة الوحيدة اللي بتخطف عيني وقلبي.. وجودك جنبِي بيطمني وبيخلي كل حاجة أحلى.</p>
+        </div>
+
+        <!-- 3. الكارت الثالث (الصورة رقم 2) -->
+        <div class="photo-card">
+            <img src="2.jpg" alt="روبانزل">
+            <h4>النظرة دي.. 😊</h4>
+            <p>أحلى حاجة في الدنيا لما ألاقيكي بتبصيلي بالاهتمام ده، بتخليني أحس إن مفيش حد غيري في المكان.</p>
+        </div>
+
+        <!-- 4. الكارت الرابع (الصورة رقم 8) -->
+        <div class="photo-card">
+            <img src="8.jpg" alt="الفارس والأميرة">
+            <h4>أميرتي وحبيبتي 👑</h4>
+            <p>زي القصص الخيالية، مستعد أحميكي وأقف جنبك في كل لحظة، وأكون دايماً الفارس والضهر اللي تتسندي عليه وأنتِ مطمنة.</p>
+        </div>
+
+        <!-- 5. باقي الكروت بالترتيب -->
+        <div class="photo-card">
+            <img src="3.jpg" alt="زوتوبيا">
+            <h4>جنوننا سوا 🤪</h4>
+            <p>مقالبنا وجناننا وضحكنا من القلب هما أكتر حاجة بتهون عليا أي سحلة أو يوم ثقيل.</p>
+        </div>
+
+        <div class="photo-card">
+            <img src="4.jpg" alt="إليمنتال">
+            <h4>عكس بعض بس بنكمل بعض ✨</h4>
+            <p>مهما اختلفنا أو كنا عكس بعض في حاجات، بنفضل دايماً أكمل وأحلى إثنين مع بعض.</p>
+        </div>
+
+        <div class="photo-card">
+            <img src="5.jpg" alt="قصتنا">
+            <h4>قلب كبير ❤️</h4>
+            <p>كل تفصيلة بنعملها سوا بتسيب أثر حلو في يومي، وبتفكرني دايماً قد إيه أنا محظوظ بيكي.</p>
+        </div>
+
+        <div class="photo-card">
+            <img src="6.jpg" alt="Up">
+            <h4>للعمر كله سوا 👵👨</h4>
+            <p>نفسي نكبر سوا ونعجز سوا، ونفضل ماسكين إيد بعض وبنحضر نفس حكاياتنا وضحكنا حتى وأحنا شيبنا.. وجودك جنبي هو أملي في القادم.</p>
+        </div>
+
+        <div class="photo-card">
+            <img src="7.jpg" alt="شلبي وبو">
+            <h4>الأمان والحنية 🧸</h4>
+            <p>مهما كانت الدنيا زحمة أو تخوف، بتفضلي أنتِ المكان الآمن اللي برتاح فيه.. الحنية اللي في قلبك عليا بتهون كل حاجة ثقيلة.</p>
+        </div>
+
+        <div class="photo-card">
+            <img src="9.jpg" alt="القطط">
+            <h4>الدفء والراحة 🐾</h4>
+            <p>أبسط لحظة جنبك بتديني طمأنينة وراحة مش بلاقيها في أي مكان تاني.. قربك دايماً بيكفيني عن العالم كله.</p>
+        </div>
+
+        <!-- الرسالة الختامية -->
+        <div class="final-letter">
+            <p>أنا عملت الموقع ده عشان أقولك قد إيه أنا بحب كل حاجة بيننا، وعشان أقولك إنك وحشاني أوي.. ربنا يخليكي ليا وتفضلي دائماً معايا وفي قلبي ❤️</p>
+        </div>
+
+        <!-- زرار الواتساب -->
+        <a href="https://wa.me/201026803325?text=الموقع%20تحفة%20أوي%20يا%20حبيبي%20❤️" class="whatsapp-btn" target="_blank">
+            ابعتيلي رسالة علي الواتساب 💬
+        </a>
+    </div>
+</div>
+
+<script>
+    const audio = document.getElementById('bgMusic');
+
+    function toggleAudio() {
+        if (audio.paused) {
+            audio.play().catch(e => console.log("Error:", e));
+        } else {
+            audio.pause();
+        }
+    }
+
+    function checkPassword() {
+        const password = document.getElementById('passInput').value.trim();
+        if (password === 'بحبك' || password === 'بحبكك') { 
+            document.getElementById('lock-screen').style.display = 'none';
+            document.getElementById('main-content').style.display = 'flex';
+            
+            document.body.classList.add('logged-in');
+            audio.play().catch(e => console.log("Autoplay blocked:", e));
+
+            startLiveCounter();
+            startContinuousHearts();
+        } else {
+            alert('كلمة السر مش صح 😅 جربي تاني!');
+        }
+    }
+
+    function startLiveCounter() {
+        const startDate = new Date("2026-08-15T23:46:00").getTime();
+
+        setInterval(function() {
+            const now = new Date().getTime();
+            const difference = now - startDate;
+
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerText = days;
+            document.getElementById("hours").innerText = hours;
+            document.getElementById("minutes").innerText = minutes;
+            document.getElementById("seconds").innerText = seconds;
+        }, 1000);
+    }
+
+    function startContinuousHearts() {
+        setInterval(() => {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 3 + 3 + 's';
+            heart.style.fontSize = Math.random() * 15 + 15 + 'px';
+            document.body.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 6000);
+        }, 300);
+    }
+</script>
+
+</body>
+</html>
