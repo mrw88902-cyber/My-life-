@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>بحبك ✨</title>
+
     <style>
         * {
             box-sizing: border-box;
@@ -27,9 +28,10 @@
             transition: background 0.8s ease-in-out;
         }
 
-        /* الطبقة الشفافة التي تظهر بعد فتح القفل */
         body.logged-in {
-            background-image: linear-gradient(rgba(20, 5, 12, 0.65), rgba(20, 5, 12, 0.65)), url('bg.jpg');
+            background-image:
+                linear-gradient(rgba(20, 5, 12, 0.65), rgba(20, 5, 12, 0.65)),
+                url('bg.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -40,6 +42,7 @@
             max-width: 440px;
             background: rgba(40, 10, 25, 0.75);
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-radius: 25px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
             padding: 22px;
@@ -49,12 +52,14 @@
             z-index: 10;
         }
 
-        /* 1. شاشة القفل */
+        /* شاشة القفل */
+
         #lock-screen {
             display: flex;
             flex-direction: column;
             gap: 18px;
             padding: 40px 10px;
+            animation: lockAppear 1s ease;
         }
 
         .lock-title {
@@ -64,6 +69,17 @@
             text-shadow: 0 0 10px rgba(255, 183, 197, 0.5);
         }
 
+        .lock-subtitle {
+            font-size: 15px;
+            color: #ffd1dc;
+        }
+
+        .lock-hint {
+            font-size: 13px;
+            color: #ffc2d1;
+            opacity: 0.9;
+        }
+
         input[type="text"] {
             padding: 14px;
             border: 2px solid #ff758c;
@@ -71,10 +87,17 @@
             text-align: center;
             font-size: 17px;
             outline: none;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             color: #4a0017;
             font-weight: bold;
             width: 100%;
+            transition: 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #ffb7c5;
+            box-shadow: 0 0 18px rgba(255, 117, 140, 0.35);
+            transform: scale(1.01);
         }
 
         button.btn-main {
@@ -95,11 +118,13 @@
             transform: scale(0.97);
         }
 
-        /* 2. المحتوى الرئيسي */
+        /* المحتوى الرئيسي */
+
         #main-content {
             display: none;
             flex-direction: column;
             gap: 22px;
+            animation: mainAppear 1s ease;
         }
 
         .header h1 {
@@ -115,6 +140,7 @@
         }
 
         /* المشغل الصوتي */
+
         .audio-player {
             background: rgba(255, 255, 255, 0.1);
             padding: 15px;
@@ -141,7 +167,8 @@
             cursor: pointer;
         }
 
-        /* العداد الحي */
+        /* العداد */
+
         .counter-box {
             background: rgba(0, 0, 0, 0.3);
             padding: 18px;
@@ -158,13 +185,14 @@
         .timer {
             display: flex;
             justify-content: space-around;
+            gap: 6px;
         }
 
         .timer-unit {
             background: rgba(255, 255, 255, 0.15);
-            padding: 8px 12px;
+            padding: 8px 6px;
             border-radius: 12px;
-            min-width: 65px;
+            min-width: 60px;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
@@ -180,7 +208,8 @@
             color: #ffc2d1;
         }
 
-        /* شريط التواريخ Timeline */
+        /* الذكريات */
+
         .timeline-box {
             background: rgba(0, 0, 0, 0.3);
             border-radius: 20px;
@@ -193,12 +222,21 @@
             font-size: 16px;
             color: #ffb7c5;
             margin-bottom: 12px;
+            text-align: center;
         }
 
         .timeline-item {
             margin-bottom: 12px;
             padding-bottom: 10px;
             border-bottom: 1px dashed rgba(255, 183, 197, 0.3);
+            opacity: 0;
+            transform: translateY(25px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .timeline-item.show {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .timeline-item:last-child {
@@ -221,16 +259,86 @@
         .timeline-text {
             font-size: 13px;
             color: #ffe6eb;
-            line-height: 1.5;
+            line-height: 1.7;
         }
 
-        /* كروت الصور */
+        /* إنتي بالنسبالي إيه */
+
+        .about-her {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 18px;
+            text-align: right;
+            border-right: 4px solid #ff758c;
+        }
+
+        .about-her h3 {
+            text-align: center;
+            font-size: 18px;
+            color: #ffb7c5;
+            margin-bottom: 18px;
+        }
+
+        .about-item {
+            background: rgba(255, 255, 255, 0.07);
+            padding: 13px;
+            border-radius: 15px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 183, 197, 0.15);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .about-item.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .about-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .about-item h4 {
+            color: #ffb7c5;
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+
+        .about-item p {
+            color: #ffe6eb;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        /* الصور */
+
+        .photos-box {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .photos-box h3 {
+            color: #ffb7c5;
+            font-size: 18px;
+            margin-bottom: 2px;
+        }
+
         .photo-card {
             background: rgba(0, 0, 0, 0.45);
             padding: 14px;
             border-radius: 20px;
             text-align: right;
             border: 1px solid rgba(255, 183, 197, 0.25);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .photo-card.show {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .photo-card img {
@@ -253,19 +361,29 @@
             color: #ffe6eb;
         }
 
-        /* الرسالة الختامية */
+        /* الرسالة الأخيرة */
+
         .final-letter {
             background: rgba(255, 117, 140, 0.2);
             padding: 20px;
             border-radius: 20px;
             border: 1.5px dashed #ff758c;
-            line-height: 1.7;
+            line-height: 1.8;
             text-align: right;
             font-size: 14px;
             color: #ffffff;
+            opacity: 0;
+            transform: translateY(25px);
+            transition: opacity 1s ease, transform 1s ease;
         }
 
-        /* زرار الواتساب */
+        .final-letter.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* واتساب */
+
         .whatsapp-btn {
             display: flex;
             align-items: center;
@@ -279,14 +397,22 @@
             font-size: 16px;
             font-weight: bold;
             box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
-            transition: 0.3s;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .whatsapp-btn.show {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.8s ease, transform 0.8s ease;
         }
 
         .whatsapp-btn:active {
             transform: scale(0.98);
         }
 
-        /* تأثير القلوب المستمرة */
+        /* القلوب */
+
         .heart {
             position: fixed;
             top: -20px;
@@ -303,224 +429,583 @@
                 opacity: 0;
             }
         }
+
+        @keyframes lockAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes mainAppear {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .unlocking {
+            animation: unlockEffect 0.8s ease forwards;
+        }
+
+        @keyframes unlockEffect {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.7;
+                transform: scale(1.03);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+        }
+
+        @media (max-width: 380px) {
+            .container {
+                padding: 16px;
+            }
+
+            .timer-unit {
+                min-width: 55px;
+                padding: 7px 4px;
+            }
+
+            .timer-unit span {
+                font-size: 18px;
+            }
+        }
     </style>
 </head>
+
 <body>
 
 <div class="container">
-    <!-- 1. شاشة القفل -->
+
+    <!-- شاشة القفل -->
+
     <div id="lock-screen">
-        <div class="lock-title"</div>كوكبنا✨</div>
-        <p style="font-size: 13px; color: #ffd1dc;">اكتبي كلمة السر عشان تدخلي..</p>
-        <input type="text" id="passInput" placeholder="كلمة السر">
-        <button class="btn-main" onclick="checkPassword()">افتحي الهدية ❤️</button>
+
+        <div class="lock-title">كوكبنا✨</div>
+
+        <p class="lock-subtitle">
+            المكان ده ليكي إنتي بس
+        </p>
+
+        <input
+            type="text"
+            id="passInput"
+            placeholder="كلمة السر"
+            autocomplete="off"
+        >
+
+        <button class="btn-main" onclick="checkPassword()">
+             ادخلي 
+         ❤️
+        </button>
+
+        <p class="lock-hint">
+            مستنيكي جوا ❤️
+        </p>
+
     </div>
 
-    <!-- 2. المحتوى الرئيسي -->
+
+    <!-- المحتوى الرئيسي -->
+
     <div id="main-content">
+
         <div class="header">
             <h1>my fav person❤️</h1>
             <p>وجودك في حياتي بيدي لكل حاجة معنى.</p>
         </div>
 
+
         <!-- المشغل الصوتي -->
+
         <div class="audio-player">
+
             <p>🎵 ❤️خليك معايا</p>
-            <button class="play-btn" onclick="toggleAudio()">تشغيل / إيقاف الأغنية ▶️</button>
+
+            <button class="play-btn" onclick="toggleAudio()">
+                تشغيل / إيقاف الأغنية ▶️
+            </button>
+
             <audio id="bgMusic" controls style="width: 100%;">
                 <source src="song.mp3" type="audio/mpeg">
                 متصفحك لا يدعم تشغيل هذا الملف.
             </audio>
+
         </div>
 
-        <!-- العداد الحي -->
+
+        <!-- العداد -->
+
         <div class="counter-box">
-            <h3>من اللحظة دي وانا مبقتش بعرف انام ✨</h3>
+
+            <h3>
+                من اللحظة دي وانا مبقتش بعرف انام ✨
+            </h3>
+
             <div class="timer">
-                <div class="timer-unit"><span id="days">0</span><small>يوم</small></div>
-                <div class="timer-unit"><span id="hours">0</span><small>ساعة</small></div>
-                <div class="timer-unit"><span id="minutes">0</span><small>دقيقة</small></div>
-                <div class="timer-unit"><span id="seconds">0</span><small>ثانية</small></div>
+
+                <div class="timer-unit">
+                    <span id="days">0</span>
+                    <small>يوم</small>
+                </div>
+
+                <div class="timer-unit">
+                    <span id="hours">0</span>
+                    <small>ساعة</small>
+                </div>
+
+                <div class="timer-unit">
+                    <span id="minutes">0</span>
+                    <small>دقيقة</small>
+                </div>
+
+                <div class="timer-unit">
+                    <span id="seconds">0</span>
+                    <small>ثانية</small>
+                </div>
+
             </div>
+
         </div>
 
-        <!-- شريط التواريخ Timeline -->
+
+        <!-- الذكريات -->
+
         <div class="timeline-box">
+
             <h3>ذكرياتنا سوا 🗓️</h3>
-            
-            <!-- الذكريات الأصلية من السكرين شوت -->
+
             <div class="timeline-item">
                 <span class="timeline-date">من 4 سنين</span>
-                <p class="timeline-text">كنت بحبك في السكوتي وفي سرّي، وبدعي ربنا تفضلي معايا.</p>
+                <p class="timeline-text">
+                    كنت بحبك في السكوتي وفي سرّي، وبدعي ربنا تفضلي معايا.
+                </p>
             </div>
 
             <div class="timeline-item">
                 <span class="timeline-date">ليالي رمضان ⚽🌙</span>
-                <p class="timeline-text">لما كنت بلعب كورة تحت البيت كل يوم في رمضان.. وأنتِ واقفة في البلكونة بتتفرجي عليا، وعلى فكرة.. كنت باخد بالي ومتابع نظراتك 👀❤️</p>
+                <p class="timeline-text">
+                    لما كنت بلعب كورة تحت البيت كل يوم في رمضان.. وأنتِ واقفة في البلكونة بتتفرجي عليا، وعلى فكرة.. كنت باخد بالي ومتابع نظراتك 👀❤️
+                </p>
             </div>
 
             <div class="timeline-item">
                 <span class="timeline-date">15 أغسطس 2026 - 11:46 PM</span>
-                <p class="timeline-text">اليوم اللي اعترفتلك فيه بحبي وأول كلام حقيقي بيننا.. أحلى لحظة في حياتي ✨</p>
+                <p class="timeline-text">
+                    اليوم اللي اعترفتلك فيه بحبي وأول كلام حقيقي بيننا.. أحلى لحظة في حياتي ✨
+                </p>
             </div>
 
-            <!-- الإضافات الجديدة -->
             <div class="timeline-item">
                 <span class="timeline-date">أيام ثانوي 🏫👀</span>
-                <p class="timeline-text">فاكرة أيام ثانوي؟ أيام امتحانات الثانوية لما كنت بتيجي المدرسة عشان تدخلي حاجات لأخوكي، وتسيبيلي حاجتك .. كنت ببقى واقف بره مستنيكي قلقان وبقول في سري أنا إيه اللي مدخلني في الفلم ده بس😂!. بس بصراحه كنت دايما واقف وحطت ايدي علي قلبي لحد ما تطلعي و برضو بصراحة ؟ كنت بكون مبسوط إني واقف بشوفك وبتكلم معاكي وسط كل الدوشة دي.. كانت أحلى ساعة في اليوم.".</p>
+                <p class="timeline-text">
+                    فاكرة أيام ثانوي؟ أيام امتحانات الثانوية لما كنت بتيجي المدرسة عشان تدخلي حاجات لأخوكي، وتسيبيلي حاجتك .. كنت ببقى واقف بره مستنيكي قلقان وبقول في سري أنا إيه اللي مدخلني في الفلم ده بس 😂! بس بصراحه كنت دايما واقف وحاطط ايدي علي قلبي لحد ما تطلعي وبرضو بصراحة؟ كنت بكون مبسوط إني واقف بشوفك وبتكلم معاكي وسط كل الدوشة دي.. كانت أحلى ساعة في اليوم.
+                </p>
             </div>
 
             <div class="timeline-item">
                 <span class="timeline-date">لما الشماتة لفّت ورجعتلك 😂❤️</span>
-                <p class="timeline-text">فاكرة لما كنا في درس مستر محمد وكنت قاعد أضحك أنا وهشام، والأستاذ قفشني وسألني وأنتِ قعدتي تضحكي عليا وتتشمتي؟ بعدها بكام يوم بس عند البشمهندس، راح مديكي سؤال مفاجأة وخلاكي تدفعي 5 جنيه!! 😂</p>
+                <p class="timeline-text">
+                    فاكرة لما كنا في درس مستر محمد وكنت قاعد أضحك أنا وهشام، والأستاذ قفشني وسألني وأنتِ قعدتي تضحكي عليا وتتشمتي؟ بعدها بكام يوم بس عند البشمهندس، راح مديكي سؤال مفاجأة وخلاكي تدفعي 5 جنيه!! 😂
+                </p>
             </div>
 
             <div class="timeline-item">
                 <span class="timeline-date">بداية حكايتنا والاستوريهات 🎵📱</span>
-                <p class="timeline-text">أيام ما كنا بنفضل نلمح لبعض بالأغاني في الاستوريهات.. لحد ما نزلت استوري لشات، فافتكرتِ إن التلميحات دي لحد تاني ونزلتي استوري يبان منها إن الكلام مش ليا. ساعتها جريت بأسرع ما عندي وقلتلك 'لااااا طبعاً ليكي أنتِ!' واعترفتلك بحبي، وفضلنا طول اليوم ده لحد الصبح مش بنام ومش مصدق.. بحبك حب ما يتوصفش والله!</p>
+                <p class="timeline-text">
+                    أيام ما كنا بنفضل نلمح لبعض بالأغاني في الاستوريهات.. لحد ما نزلت استوري لشات، فافتكرتِ إن التلميحات دي لحد تاني ونزلتي استوري يبان منها إن الكلام مش ليا. ساعتها جريت بأسرع ما عندي وقلتلك لااااا طبعاً ليكي أنتِ! واعترفتلك بحبي، وفضلنا طول اليوم ده لحد الصبح مش بنام ومش مصدق.. بحبك حب ما يتوصفش والله!
+                </p>
             </div>
+
         </div>
 
-        <!-- كروت الصور -->
 
-        <!-- 1. الكارت الأول (الصورة رقم 10) -->
-        <div class="photo-card">
-            <img src="10.jpg" alt="حكايتنا">
-            <h4>حكايتنا ❤️</h4>
-            <p>وسط كل الزحمة والدوشة اللي في العالم، عينيكي هي المكان الوحيد اللي بحس فيه بهدوء ورضا.. ربنا يديمك في حياتي يا أحلى نِعمة.</p>
+        <!-- إنتي بالنسبالي إيه -->
+
+        <div class="about-her">
+
+            <h3>إنتي بالنسبالي إيه ❤️</h3>
+
+            <div class="about-item">
+                <h4>إنتي بالنسبالي إيه</h4>
+                <p>
+                    إنتي قلبي وروحي وبنتي وحب عمري والحاجه الي دايما منوره حياتي وجودك ف حياتي لوحده بيخليني أحس إن الدنيا لسه فيها حاجات حلوه وإن مهما حصل عندي حد وجوده بيفرق معايا وبيهون عليا حاجات كتير
+                </p>
+            </div>
+
+            <div class="about-item">
+                <h4>أكتر حاجة بحبها ف شخصيتك</h4>
+                <p>
+                    أكتر حاجة بحبها ف شخصيتك جنانك وهبلك اللي بحبهم اوي وبحس معاكي فعلا إنك بنتي وف نفس الوقت لما ابقا عايز أتكلم جد بلاقيكي أكتر واحدة بعرف أتكلم معاها وبكون مرتاح وأنا بتكلم معاكي وأكتر حاجة بتفرق معايا إنك دايما فاهِماني من غير ما أتكلم حرفيا وكإنك حاسه بيا من غير ما أقول حاجة ولما ببقا مضايق أو زعلان بلاقيكي حسيتي بيا من نفسك ودي من أكتر الحاجات اللي بحبها فيكي
+                </p>
+            </div>
+
+            <div class="about-item">
+                <h4>إنتي عاملة إزاي ف عيني</h4>
+                <p>
+                    إنتي ف عيني دايما الأميرة بتاعتي زي ما دايما بقولك ومهما حاولت أوصفلك إنتي عاملة إزاي ف عيني مش هعرف أوفيكي حقك بس بالنسبالي إنتي أجمل وأغلى حد ف الدنيا ومكانتك عندي عمرها م هتكون عاديه
+                </p>
+            </div>
+
+            <div class="about-item">
+                <h4>تفاصيل صغيرة فيكي بحبها</h4>
+                <p>
+                    بحب فيكي حاجات كتير يمكن إنتي نفسك متاخديش بالك منها بحب لبسك الكويس وطريقتك ف إنك دايما محافظة على نفسك ومن غير ما أبص أو أسأل ببقا واثق إنك عمرك ما هتخذليني ف لبسك أو حجابك أو دينك ودي حاجة كبيرة اوي عندي وبتخليني دايما فخور بيكي وواثق فيكي
+                </p>
+            </div>
+
+            <div class="about-item">
+                <h4>إيه أكتر حاجة بتخليني مرتاح معاكي</h4>
+                <p>
+                    أكتر حاجة بتخليني مرتاح معاكي إني م بحس إنك بنتي بس بحس برضو ساعات إنك أمي من كتر م بتفهميني وبتحسي بيا وبتعرفي أنا مالي من غير م أتكلم ودي حاجة بحبها اوي فيكي
+                </p>
+            </div>
+
+            <div class="about-item">
+                <h4>إيه اللي بيخليني أفتخر بيكي</h4>
+                <p>
+                    بفتخر بيكي ف حاجات كتير اوي من لبسك لحفاظك على دينك وعلى نفسك وحاجات كتير تانيه يمكن م بعرفش أقولها كلها بس دايما بحس إني فخور بيكي وبالطريقة اللي إنتي عليها
+                </p>
+            </div>
+
+            <div class="about-item">
+                <h4>إيه اللي بيميزها عن غيرها</h4>
+                <p>
+                    أنا عمري م بقارنها بحد علشان هي أصلا م زي أي حد ومفيش حد شبهها بالنسبالي
+                </p>
+            </div>
+
+            <div class="about-item">
+                <h4>نفسي تفضلي عارفة دايما ❤️</h4>
+                <p>
+                    نفسي تفضلي عارفه إني هعمل أي حاجة علشان خاطرك وعلشان تبقي معايا ونصيبي وإن عيني عمرها م تشوف غيرك وإنك فعلا الحاجة الحلوة اللي ف حياتي وإن نفسي تفضلي دايما معايا ومهما حصل أو الدنيا خدتنا ف أي اتجاه نفسي أفضل متمسك بيكي ونفضل لبعض زي ما إحنا ونعيش كل الحاجات الحلوة اللي لسه مستنيانا سوا
+                    <br><br>
+                    بحبكككك يا أميرتي
+                </p>
+            </div>
+
         </div>
 
-        <!-- 2. الكارت الثاني (الصورة رقم 1) -->
-        <div class="photo-card">
-            <img src="1.jpg" alt="سبايدرمان">
-            <h4>أحلى صورة في قلبي ❤️</h4>
-            <p>مهما بصيت حواليا، بتفضلي أنتِ الحاجة الوحيدة اللي بتخطف عيني وقلبي.. وجودك جنبِي بيطمني وبيخلي كل حاجة أحلى.</p>
+
+        <!-- الصور -->
+
+        <div class="photos-box">
+
+            <h3>صور بتحكي كلام كتير ❤️</h3>
+
+            <div class="photo-card">
+                <img src="10.jpg" alt="حكايتنا">
+                <h4>حكايتنا ❤️</h4>
+                <p>كل صورة هنا ليها حكاية عندي.</p>
+            </div>
+
+            <div class="photo-card">
+                <img src="1.jpg" alt="أحلى صورة">
+                <h4>أحلى صورة في قلبي ❤️</h4>
+                <p>الصورة دي من الصور اللي بحب أشوفها دايما.</p>
+            </div>
+
+            <div class="photo-card">
+                <img src="2.jpg" alt="النظرة">
+                <h4>النظرة دي.. 😊</h4>
+                <p>نظرة لوحدها كفاية تقول حاجات كتير.</p>
+            </div>
+
+            <div class="photo-card">
+                <img src="8.jpg" alt="أميرتي">
+                <h4>أميرتي وحبيبتي 👑</h4>
+                <p>زي ما دايما بقولك.</p>
+            </div>
+
+            <div class="photo-card">
+                <img src="3.jpg" alt="جنوننا">
+                <h4>جنوننا سوا 🤪</h4>
+                <p>أحلى حاجة إننا بنعرف نهزر ونضحك سوا.</p>
+            </div>
+
+            <div class="photo-card">
+                <img src="4.jpg" alt="عكس بعض">
+                <h4>عكس بعض بس بنكمل بعض ✨</h4>
+                <p>يمكن مختلفين ف حاجات كتير بس دايما بنكمل بعض.</p>
+            </div>
+
+            <div class="photo-card">
+                <img src="5.jpg" alt="قلب كبير">
+                <h4>قلب كبير ❤️</h4>
+                <p>من أكتر الحاجات اللي بحبها فيكي.</p>
+            </div>
+
+            <div class="photo-card">
+                <img src="6.jpg" alt="للعمر كله">
+                <h4>للعمر كله سوا 👵👨</h4>
+                <p>نفسي كل الحاجات الحلوة اللي جاية نعيشها سوا.</p>
+            </div>
+
+            <div class="photo-card">
+                <img src="7.jpg" alt="الأمان">
+                <h4>الأمان والحنية 🧸</h4>
+                <p>وجودك لوحده بيخليني مرتاح.</p>
+            </div>
+
+            <div class="photo-card">
+                <img src="9.jpg" alt="الدفء">
+                <h4>الدفء والراحة 🐾</h4>
+                <p>إنتي من الناس اللي وجودهم بيهون الدنيا.</p>
+            </div>
+
         </div>
 
-        <!-- 3. الكارت الثالث (الصورة رقم 2) -->
-        <div class="photo-card">
-            <img src="2.jpg" alt="روبانزل">
-            <h4>النظرة دي.. 😊</h4>
-            <p> علشان النظره دي هحارب الدنيا كلها علشان اصحي وأشوف النظره دي كل يوم في عنيكي.</p>
-                    </div>
 
-        <!-- 4. الكارت الرابع (الصورة رقم 8) -->
-        <div class="photo-card">
-            <img src="8.jpg" alt="الفارس والأميرة">
-            <h4>أميرتي وحبيبتي 👑</h4>
-            <p>زي القصص الخيالية، مستعد أحميكي وأقف جنبك في كل لحظة، وأكون دايماً الفارس والضهر اللي تتسندي عليه وأنتِ مطمنة.</p>
-        </div>
+        <!-- الرسالة الأخيرة -->
 
-        <!-- 5. باقي الكروت بالترتيب -->
-        <div class="photo-card">
-            <img src="3.jpg" alt="زوتوبيا">
-            <h4>جنوننا سوا 🤪</h4>
-            <p>مقالبنا وجناننا وضحكنا من القلب هما أكتر حاجة بتهون عليا أي سحلة أو يوم ثقيل.</p>
-        </div>
-
-        <div class="photo-card">
-            <img src="4.jpg" alt="إليمنتال">
-            <h4>عكس بعض بس بنكمل بعض ✨</h4>
-            <p>مهما اختلفنا أو كنا عكس بعض في حاجات، بنفضل دايماً أكمل وأحلى إثنين مع بعض.</p>
-        </div>
-
-        <div class="photo-card">
-            <img src="5.jpg" alt="قصتنا">
-            <h4>قلب كبير ❤️</h4>
-            <p>كل تفصيلة بنعملها سوا بتسيب أثر حلو في يومي، وبتفكرني دايماً قد إيه أنا محظوظ بيكي.</p>
-        </div>
-
-        <div class="photo-card">
-            <img src="6.jpg" alt="Up">
-            <h4>للعمر كله سوا 👵👨</h4>
-            <p>نفسي نكبر سوا ونعجز سوا، ونفضل ماسكين إيد بعض وبنحضر نفس حكاياتنا وضحكنا حتى وأحنا شيبنا.. وجودك جنبي هو أملي في القادم.</p>
-        </div>
-
-        <div class="photo-card">
-            <img src="7.jpg" alt="شلبي وبو">
-            <h4>الأمان والحنية 🧸</h4>
-            <p>مهما كانت الدنيا زحمة أو تخوف، بتفضلي أنتِ المكان الآمن اللي برتاح فيه.. الحنية اللي في قلبك عليا بتهون كل حاجة ثقيلة.</p>
-        </div>
-
-        <div class="photo-card">
-            <img src="9.jpg" alt="القطط">
-            <h4>الدفء والراحة 🐾</h4>
-            <p>أبسط لحظة جنبك بتديني طمأنينة وراحة مش بلاقيها في أي مكان تاني.. قربك دايماً بيكفيني عن العالم كله.</p>
-        </div>
-
-        <!-- الرسالة الختامية -->
         <div class="final-letter">
-            <p>عايز اقولك...ربنا يديمك في حياتي وما يحرميش منك أبداً يا أحلى وأغلى حاجة حصلتلي.. وجودك جمبي بيفرق في كل لحظة، وهفضل أحبك وأختارك كل يوم زي أول يوم وأكتر، عشان أنتِ مش بس حبيبتي، أنتِ عالمي الصغير كله اللي بتهرب فيه وبطمن جواه.. بحبكككك ❤️</p>
+            عايز اقولك...ربنا يديمك في حياتي وما يحرميش منك أبداً يا أحلى وأغلى حاجة حصلتلي.. وجودك جمبي بيفرق في كل لحظة، وهفضل أحبك وأختارك كل يوم زي أول يوم وأكتر، عشان أنتِ مش بس حبيبتي، أنتِ عالمي الصغير كله اللي بتهرب فيه وبطمن جواه.. بحبكككك ❤️
         </div>
 
-        <!-- زرار الواتساب -->
-        <a href="https://wa.me/201026803325?text=%D8%A5%D9%8A%D9%87%20%D8%B1%D8%A3%D9%8A%D9%83" class="whatsapp-btn" target="_blank">
+
+        <!-- واتساب -->
+
+        <a
+            class="whatsapp-btn"
+            href="https://wa.me/201026803325?text=%D8%A5%D9%8A%D9%87%20%D8%B1%D8%A3%D9%8A%D9%83"
+            target="_blank"
+            rel="noopener"
+        >
             إيه رأيك 💬
         </a>
+
     </div>
+
 </div>
 
-<script>
-    const audio = document.getElementById('bgMusic');
 
-    function toggleAudio() {
-        if (audio.paused) {
-            audio.play().catch(e => console.log("Error:", e));
-        } else {
-            audio.pause();
-        }
-    }
+<script>
+
+    /* =========================
+       كلمة السر
+    ========================= */
 
     function checkPassword() {
-        const password = document.getElementById('passInput').value.trim();
-        if (password === '15/8' || password === '15-8' || password === '15/08' || password === '١٥/٨') { 
-            document.getElementById('lock-screen').style.display = 'none';
-            document.getElementById('main-content').style.display = 'flex';
-            
-            document.body.classList.add('logged-in');
-            audio.play().catch(e => console.log("Autoplay blocked:", e));
 
-            startLiveCounter();
-            startContinuousHearts();
+        const input = document.getElementById("passInput");
+        const password = input.value.trim();
+
+        const correctPasswords = [
+            "15/8",
+            "15-8",
+            "15/08",
+            "١٥/٨"
+        ];
+
+        if (correctPasswords.includes(password)) {
+
+            const lockScreen = document.getElementById("lock-screen");
+            const mainContent = document.getElementById("main-content");
+
+            lockScreen.classList.add("unlocking");
+
+            setTimeout(() => {
+
+                lockScreen.style.display = "none";
+                mainContent.style.display = "flex";
+
+                document.body.classList.add("logged-in");
+
+                startCounter();
+                createHearts();
+                startScrollAnimations();
+
+                const music = document.getElementById("bgMusic");
+
+                music.play().catch(() => {});
+
+            }, 700);
+
         } else {
-            alert('كلمة السر مش صح 😅 جربي تاني!');
+
+            input.style.borderColor = "#ff1744";
+
+            input.value = "";
+
+            input.placeholder = "الباسورد غلط 😅";
+
+            setTimeout(() => {
+
+                input.style.borderColor = "#ff758c";
+                input.placeholder = "كلمة السر";
+
+            }, 1500);
+
         }
+
     }
 
-    function startLiveCounter() {
-        const startDate = new Date("2026-08-15T23:46:00").getTime();
 
-        setInterval(function() {
-            const now = new Date().getTime();
-            const difference = now - startDate;
+    /* =========================
+       تشغيل وإيقاف الأغنية
+    ========================= */
 
-            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+    function toggleAudio() {
 
-            document.getElementById("days").innerText = days;
-            document.getElementById("hours").innerText = hours;
-            document.getElementById("minutes").innerText = minutes;
-            document.getElementById("seconds").innerText = seconds;
-        }, 1000);
+        const music = document.getElementById("bgMusic");
+
+        if (music.paused) {
+            music.play();
+        } else {
+            music.pause();
+        }
+
     }
 
-    function startContinuousHearts() {
+
+    /* =========================
+       العداد
+    ========================= */
+
+    function startCounter() {
+
+        const startDate = new Date("2026-08-15T23:46:00");
+
+        function updateCounter() {
+
+            const now = new Date();
+
+            let diff = now - startDate;
+
+            if (diff < 0) {
+                diff = 0;
+            }
+
+            const totalSeconds = Math.floor(diff / 1000);
+
+            const days = Math.floor(totalSeconds / 86400);
+
+            const hours = Math.floor(
+                (totalSeconds % 86400) / 3600
+            );
+
+            const minutes = Math.floor(
+                (totalSeconds % 3600) / 60
+            );
+
+            const seconds = totalSeconds % 60;
+
+            document.getElementById("days").textContent = days;
+            document.getElementById("hours").textContent = hours;
+            document.getElementById("minutes").textContent = minutes;
+            document.getElementById("seconds").textContent = seconds;
+
+        }
+
+        updateCounter();
+
+        setInterval(updateCounter, 1000);
+
+    }
+
+
+    /* =========================
+       القلوب
+    ========================= */
+
+    function createHearts() {
+
         setInterval(() => {
-            const heart = document.createElement('div');
-            heart.classList.add('heart');
-            heart.innerHTML = '❤️';
-            heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.animationDuration = Math.random() * 3 + 3 + 's';
-            heart.style.fontSize = Math.random() * 15 + 15 + 'px';
+
+            const heart = document.createElement("div");
+
+            heart.className = "heart";
+
+            heart.textContent = "❤️";
+
+            heart.style.left =
+                Math.random() * 100 + "vw";
+
+            heart.style.animationDuration =
+                (Math.random() * 3 + 4) + "s";
+
             document.body.appendChild(heart);
 
             setTimeout(() => {
                 heart.remove();
-            }, 6000);
-        }, 300);
+            }, 7000);
+
+        }, 500);
+
     }
+
+
+    /* =========================
+       ظهور العناصر أثناء النزول
+    ========================= */
+
+    function startScrollAnimations() {
+
+        const elements = document.querySelectorAll(
+            ".timeline-item, .photo-card, .about-item, .final-letter, .whatsapp-btn"
+        );
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+
+                entries.forEach(entry => {
+
+                    if (entry.isIntersecting) {
+
+                        entry.target.classList.add("show");
+
+                        observer.unobserve(entry.target);
+
+                    }
+
+                });
+
+            },
+            {
+                threshold: 0.12
+            }
+        );
+
+        elements.forEach(element => {
+            observer.observe(element);
+        });
+
+    }
+
+
+    /* =========================
+       زر Enter للباسورد
+    ========================= */
+
+    document
+        .getElementById("passInput")
+        .addEventListener("keydown", function(event) {
+
+            if (event.key === "Enter") {
+                checkPassword();
+            }
+
+        });
+
 </script>
 
 </body>
