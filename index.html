@@ -382,6 +382,99 @@
             transform: translateY(0);
         }
 
+        /* قسم الشات التفاعلي */
+
+        .chat-box-container {
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 20px;
+            padding: 18px;
+            border: 1px solid rgba(255, 117, 140, 0.3);
+            text-align: center;
+            opacity: 0;
+            transform: translateY(25px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .chat-box-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .chat-box-container h3 {
+            font-size: 16px;
+            color: #ffb7c5;
+            margin-bottom: 12px;
+        }
+
+        .chat-messages {
+            height: 260px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-message {
+            max-width: 80%;
+            padding: 8px 14px;
+            border-radius: 15px;
+            font-size: 13px;
+            line-height: 1.5;
+            word-break: break-word;
+            text-align: right;
+        }
+
+        .chat-message.my-message {
+            align-self: flex-start;
+            background: linear-gradient(45deg, #ff758c, #ff4d6d);
+            color: white;
+            border-bottom-right-radius: 2px;
+        }
+
+        .chat-message.other-message {
+            align-self: flex-end;
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffe6eb;
+            border-bottom-left-radius: 2px;
+        }
+
+        .chat-input-box {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .chat-input-box input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1.5px solid #ff758c;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #4a0017;
+            font-size: 14px;
+            outline: none;
+            text-align: right;
+        }
+
+        .chat-input-box button {
+            padding: 10px 18px;
+            background: linear-gradient(45deg, #ff758c, #ff7eb3);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .chat-input-box button:active {
+            transform: scale(0.95);
+        }
+
         /* واتساب */
 
         .whatsapp-btn {
@@ -782,6 +875,18 @@
         </div>
 
 
+        <!-- قسم الشات التفاعلي المباشر -->
+
+        <div class="chat-box-container">
+            <h3>نتكلم شوية؟ ❤️</h3>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input-box">
+                <input type="text" id="chatInput" placeholder="اكتبي رسالتك هنا..." autocomplete="off">
+                <button id="sendBtn">إرسال</button>
+            </div>
+        </div>
+
+
         <!-- واتساب -->
 
         <a
@@ -961,7 +1066,7 @@
     function startScrollAnimations() {
 
         const elements = document.querySelectorAll(
-            ".timeline-item, .photo-card, .about-item, .final-letter, .whatsapp-btn"
+            ".timeline-item, .photo-card, .about-item, .final-letter, .chat-box-container, .whatsapp-btn"
         );
 
         const observer = new IntersectionObserver(
@@ -1006,6 +1111,80 @@
 
         });
 
+</script>
+
+<!-- ربط Firebase للشات التفاعلي المباشر -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAPYJt5YFdGQH2XFYqkkJi7WHxQw9BLvQc",
+      authDomain: "my-life-f3893.firebaseapp.com",
+      databaseURL: "https://my-life-f3893-default-rtdb.firebaseio.com",
+      projectId: "my-life-f3893",
+      storageBucket: "my-life-f3893.firebasestorage.app",
+      messagingSenderId: "229081546680",
+      appId: "1:229081546680:web:ca1c9a2120cd870e55594d",
+      measurementId: "G-77WGTEPVLP"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    let currentUserId = null;
+
+    signInAnonymously(auth).catch(console.error);
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUserId = user.uid;
+      }
+    });
+
+    const messagesRef = ref(db, 'messages');
+
+    function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        const text = input.value.trim();
+
+        if (text !== "" && currentUserId) {
+            push(messagesRef, {
+                sender: currentUserId,
+                text: text,
+                timestamp: Date.now()
+            });
+            input.value = "";
+        }
+    }
+
+    document.getElementById('sendBtn').addEventListener('click', sendChatMessage);
+
+    document.getElementById('chatInput').addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            sendChatMessage();
+        }
+    });
+
+    const chatMessages = document.getElementById('chatMessages');
+
+    onChildAdded(messagesRef, (snapshot) => {
+        const data = snapshot.val();
+        const msgDiv = document.createElement('div');
+
+        msgDiv.classList.add('chat-message');
+        if (data.sender === currentUserId) {
+            msgDiv.classList.add('my-message');
+        } else {
+            msgDiv.classList.add('other-message');
+        }
+
+        msgDiv.textContent = data.text;
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
 </script>
 
 </body>
